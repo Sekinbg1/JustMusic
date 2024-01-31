@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="net.luminis.networking.kwik" type="repository">
+    <properties maven-id="net.luminis.networking:kwik:0.8.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/luminis/networking/kwik/0.8.2/kwik-0.8.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/luminis/networking/agent15/1.0.1/agent15-1.0.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/at/favre/lib/hkdf/2.0.0/hkdf-2.0.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.4/commons-cli-1.4.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.json/1.1.4/javax.json-1.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

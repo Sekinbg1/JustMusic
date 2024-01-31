@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AppBind.iml" filepath="$PROJECT_DIR$/AppBind.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AudioSystem.iml" filepath="$PROJECT_DIR$/.idea/AudioSystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Server.iml" filepath="$PROJECT_DIR$/Server.iml" />
+    </modules>
+  </component>
+</project>
