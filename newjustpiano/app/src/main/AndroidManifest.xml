@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools" package="ly.jj.newjustpiano">
+
+    <application
+            android:allowBackup="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:extractNativeLibs="true"
+            android:theme="@style/Theme.Newjustpiano" tools:targetApi="m">
+        <activity android:name=".Init"
+                  android:screenOrientation="userLandscape" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".Keyboard" android:screenOrientation="userLandscape"/>
+        <activity android:name=".Setting" android:screenOrientation="userLandscape"/>
+        <activity android:name=".Main" android:screenOrientation="userLandscape"/>
+        <activity android:name=".Local" android:screenOrientation="userLandscape"/>
+        <activity android:name=".Online" android:screenOrientation="userLandscape"/>
+        <activity android:name=".Songs" android:screenOrientation="userLandscape"/>
+        <activity android:name=".SongsBankAdd" android:screenOrientation="userLandscape"/>
+        <activity android:name=".EmptyActivity"/>
+        <activity android:name=".SongsBankSongAdd" android:screenOrientation="userLandscape"/>
+        <activity android:name=".OnlineMain" android:screenOrientation="userLandscape"/>
+        <activity android:name=".OnlineBank" android:screenOrientation="userLandscape"/>
+        <activity android:name=".OnlineFriends" android:screenOrientation="userLandscape"/>
+        <activity android:name=".OnlinePerson" android:screenOrientation="userLandscape"/>
+        <activity android:name=".OnlinePlay" android:screenOrientation="userLandscape"/>
+    </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:ignore="ManifestOrder"
+                     android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.DEVICE_POWER" tools:ignore="ProtectedPermissions"/>
+</manifest>

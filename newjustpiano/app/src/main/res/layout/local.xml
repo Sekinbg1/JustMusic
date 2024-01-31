@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/background">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_margin="10dp"
+                  android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:background="@drawable/page_background">
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background_t"
+                    android:id="@+id/local_playing_stop"
+                    android:text="停止播放"/>
+            <HorizontalScrollView android:layout_width="0dp"
+                                  android:layout_height="wrap_content"
+                                  android:layout_weight="1">
+                <LinearLayout android:layout_width="wrap_content"
+                              android:layout_height="match_parent"
+                              android:orientation="horizontal"
+                              android:id="@+id/local_flipper_select"/>
+            </HorizontalScrollView>
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background"
+                    android:id="@+id/local_switch_hand"
+                    android:text="右手"/>
+        </LinearLayout>
+        <ViewFlipper android:layout_width="match_parent"
+                     android:layout_height="0dp"
+                     android:layout_weight="1"
+                     android:id="@+id/local_flipper"/>
+    </LinearLayout>
+</LinearLayout>

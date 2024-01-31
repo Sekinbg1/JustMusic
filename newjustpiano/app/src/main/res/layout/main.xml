@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background">
+    <FrameLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginStart="100dp"
+            android:layout_marginEnd="100dp" android:layout_marginTop="50dp" android:layout_marginBottom="50dp">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:baselineAligned="false" 
+                          android:layout_height="0dp"
+                          android:layout_weight="2">
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_gravity="center"
+                              android:gravity="center"
+                              android:layout_weight="2">
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:gravity="center"
+                                  android:background="@drawable/button_background"
+                                  android:id="@+id/main_local">
+                        <ImageView android:layout_width="match_parent"
+                                   android:layout_height="0dp"
+                                   android:layout_weight="1"
+                                   android:src="@drawable/local"/>
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:layout_gravity="center"
+                                  android:text="本地"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="2">
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:gravity="center"
+                                  android:background="@drawable/button_background"
+                                  android:id="@+id/main_online">
+                        <ImageView android:layout_width="match_parent"
+                                   android:layout_height="0dp"
+                                   android:layout_weight="1"
+                                   android:src="@drawable/multi"/>
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:layout_gravity="center"
+                                  android:text="在线"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="2">
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical"
+                                  android:gravity="center"
+                                  android:background="@drawable/button_background"
+                                  android:id="@+id/main_songs">
+                        <ImageView android:layout_width="match_parent"
+                                   android:layout_height="0dp"
+                                   android:layout_weight="1"
+                                   android:src="@drawable/ranking"/>
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:layout_gravity="center"
+                                  android:text="曲库"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1">
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:orientation="vertical">
+                        <LinearLayout android:layout_width="match_parent"
+                                      android:layout_height="0dp"
+                                      android:layout_weight="1"
+                                      android:orientation="vertical"
+                                      android:gravity="center"
+                                      android:background="@drawable/button_background"
+                                      android:id="@+id/main_setting">
+                            <ImageView android:layout_width="match_parent"
+                                       android:layout_height="0dp"
+                                       android:layout_weight="1"
+                                       android:src="@drawable/setting"/>
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:layout_gravity="center"
+                                      android:text="设置"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent"
+                                      android:layout_height="0dp"
+                                      android:layout_weight="1"
+                                      android:orientation="vertical"
+                                      android:gravity="center"
+                                      android:background="@drawable/button_background"
+                                      android:id="@+id/main_sound">
+                            <ImageView android:layout_width="match_parent"
+                                       android:layout_height="0dp"
+                                       android:layout_weight="1"
+                                       android:src="@drawable/sound"/>
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:layout_gravity="center"
+                                      android:text="声库"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:baselineAligned="false" 
+                          android:layout_height="0dp"
+                          android:layout_weight="1">
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:background="@drawable/button_background"
+                              android:id="@+id/main_skin">
+                    <ImageView android:layout_width="match_parent"
+                               android:layout_height="0dp"
+                               android:layout_weight="1"
+                               android:src="@drawable/skins"/>
+                    <TextView android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:text="皮肤"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:background="@drawable/button_background"
+                              android:id="@+id/main_download">
+                    <ImageView android:layout_width="match_parent"
+                               android:layout_height="0dp"
+                               android:layout_weight="1"
+                               android:src="@drawable/download"/>
+                    <TextView android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:text="下载"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:background="@drawable/button_background"
+                              android:id="@+id/main_help">
+                    <ImageView android:layout_width="match_parent"
+                               android:layout_height="0dp"
+                               android:layout_weight="1"
+                               android:src="@drawable/help"/>
+                    <TextView android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:text="帮助"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:background="@drawable/button_background"
+                              android:id="@+id/main_bbs">
+                    <ImageView android:layout_width="match_parent"
+                               android:layout_height="0dp"
+                               android:layout_weight="1"
+                               android:src="@drawable/message"/>
+                    <TextView android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:text="论坛"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp"
+                              android:layout_height="match_parent"
+                              android:layout_weight="1"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:background="@drawable/button_background"
+                              android:id="@+id/main_feedback">
+                    <ImageView android:layout_width="match_parent"
+                               android:layout_height="0dp"
+                               android:layout_weight="1"
+                               android:src="@drawable/feedback"/>
+                    <TextView android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:text="反馈"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/background">
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:gravity="center"
+              android:text="新增歌曲"
+              android:textSize="40dp"/>
+    <Space android:layout_width="match_parent"
+           android:layout_height="10dp"
+    />
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:background="@drawable/page_background"
+                  android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+
+            <TextView android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:textSize="30sp"
+                      android:layout_gravity="center"
+                      android:gravity="center"
+                      android:layout_height="match_parent"
+                      android:id="@+id/songs_bank_add_song_bank"/>
+            <Button android:layout_width="0dp"
+                    android:layout_height="wrap_content" tools:ignore="Suspicious0dp"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="文件："/>
+            <EditText android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:minWidth="500dp"
+                      android:inputType="none"
+                      android:id="@+id/songs_bank_add_song_file"/>
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/songs_bank_add_song_select"
+                    android:background="@drawable/button_background"
+                    android:text="选择"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="名称："/>
+            <EditText android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:minWidth="500dp"
+                      android:id="@+id/songs_bank_add_song_name"/>
+        </LinearLayout>
+        <Space android:layout_width="match_parent"
+               android:layout_height="5dp"
+        />
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="作者："/>
+            <EditText android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/songs_bank_add_song_author"/>
+        </LinearLayout>
+        <Space android:layout_width="match_parent"
+               android:layout_height="5dp"
+        />
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="账号："
+                      android:visibility="invisible"
+                      android:id="@+id/songs_bank_add_song_text"/>
+            <Spinner android:layout_width="0dp"
+                     android:layout_weight="1"
+                     android:layout_height="match_parent"
+                     android:visibility="invisible"
+                     android:id="@+id/songs_bank_add_song_account"/>
+            <Button android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:ignore="Suspicious0dp"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:gravity="right">
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="取消"
+                    android:id="@+id/songs_bank_add_song_cancel"
+                    android:background="@drawable/button_background"/>
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="提交"
+                    android:background="@drawable/button_background"
+                    android:id="@+id/songs_bank_add_song_conform"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
