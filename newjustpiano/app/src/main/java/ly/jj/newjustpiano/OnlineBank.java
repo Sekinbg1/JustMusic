@@ -32,9 +32,9 @@ public class OnlineBank extends Activity {
             switch (msg.what) {
                 case 0:
                     JSONObject object = (JSONObject) msg.obj;
-                    JSONArray banks = object.getJSONArray("structs");
-                    for (int n = 0; n < object.getInteger("num"); n++) {
-                        JSONObject bank = banks.getJSONObject(n);
+                    JSONArray array = object.getJSONArray("classes");
+                    for (Object o :array) {
+                        JSONObject bank = (JSONObject) o;
                         Button button = new Button(context);
                         button.setText(bank.getString("name"));
                         button.setTextSize(textSize);
@@ -61,7 +61,7 @@ public class OnlineBank extends Activity {
                         flipper_select.addView(button);
                         GridView gridView = new GridView(context);
                         gridView.setNumColumns(3);
-                        gridView.setAdapter(new OnlineSongBankListAdapter(context, database.getBanks(), 3));
+                        gridView.setAdapter(new OnlineSongBankListAdapter(context, bank.getJSONArray("banks"), 3));
                         setFlipperTouchListener(gridView, flipper, selectsList);
                         flipper.addView(gridView);
                     }
@@ -90,7 +90,7 @@ public class OnlineBank extends Activity {
         textSize = new TextView(this).getTextSize() / getResources().getDisplayMetrics().density;
         flipper_select = findViewById(R.id.online_bank_flipper_select);
         flipper = findViewById(R.id.online_bank_flipper);
-        client.addOnMessageListener(BANK, new OnMessageListener() {
+        client.addOnMessageListener(CLASS, new OnMessageListener() {
             @Override
             public void onEnd() {
 
@@ -102,9 +102,10 @@ public class OnlineBank extends Activity {
                 Message msg = new Message();
                 msg.what = 0;
                 msg.obj = object;
+                System.out.println(new String(bytes));
                 handler.sendMessage(msg);
             }
         });
-        client.sendMessage(BANK, null);
+        client.sendMessage(CLASS, null);
     }
 }

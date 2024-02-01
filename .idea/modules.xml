@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/AppBind.iml" filepath="$PROJECT_DIR$/AppBind.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/AudioSystem.iml" filepath="$PROJECT_DIR$/.idea/AudioSystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/Server.iml" filepath="$PROJECT_DIR$/Server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/newjustpiano.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/newjustpiano.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/newjustpiano.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/newjustpiano.app.unitTest.iml" />
     </modules>
   </component>
 </project>

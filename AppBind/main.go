@@ -1,13 +1,20 @@
 package main
 
 import (
-	"AppBind/Client"
-	"time"
+	"encoding/json"
+	"fmt"
 )
 
+type test1 struct {
+	Name  string `json:"name"`
+	Name1 string `json:"name1"`
+}
+type test2 struct {
+	Name map[string]test1
+}
+
 func main() {
-	client := Client.ConnectClient{}
-	client.Connect("192.168.5.61:1130", "quic-JPServer")
-	client.SendMessage([]byte{0x00, byte('h')})
-	time.Sleep(time.Second)
+	a := test2{Name: map[string]test1{"a": {Name: "test"}}}
+	d, _ := json.Marshal(a)
+	fmt.Println(string(d))
 }

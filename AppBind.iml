@@ -3,7 +3,9 @@
   <component name="Go" enabled="true" />
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/AppBind" />
+    <content url="file://$MODULE_DIR$/AppBind">
+      <excludeFolder url="file://$MODULE_DIR$/AppBind/soundMixer/openal-soft-1.23.1/build" />
+    </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

@@ -17,7 +17,9 @@ const (
 	MSGString MsgType = 0
 	MSGSalt   MsgType = 1
 	MSGLogin  MsgType = 2
-	MSGBank   MsgType = 3
+	MSGClass  MsgType = 3
+	MSGBank   MsgType = 4
+	MSGSong   MsgType = 5
 )
 
 type User struct {
@@ -31,6 +33,8 @@ type User struct {
 var (
 	users  = make([]User, 0)
 	isOpen = true
+
+	classes = ClassJSON{Classes: []Classes{{"test", []Bank{}}, {"test1", []Bank{}}}}
 )
 
 func main() {
@@ -61,20 +65,26 @@ func main() {
 	}
 }
 
-type MSGBankJSON struct {
-	Num     int              `json:"num"`
-	Structs []StructBankJSON `json:"structs"`
+type Classes struct {
+	Name  string `json:"name"`
+	Banks []Bank `json:"banks"`
 }
-type StructBankJSON struct {
-	Name  string     `json:"name"`
-	Num   int        `json:"num"`
-	Banks []BankJSON `json:"banks"`
-}
-type BankJSON struct {
+type Bank struct {
 	Name          string `json:"name"`
-	Info          string `json:"info"`
 	Creator       string `json:"creator"`
+	Info          string `json:"info"`
 	OnlineAccount string `json:"onlineAccount"`
+	songs         []Song
+}
+type Song struct {
+	Name    string `json:"name"`
+	Info    string `json:"info,"`
+	Creator string `json:"creator"`
+	Data    []byte `json:"data"`
+}
+
+type ClassJSON struct {
+	Classes []Classes `json:"classes"`
 }
 
 func (u User) OnMessage(message []byte) {
@@ -110,10 +120,9 @@ func (u User) OnMessage(message []byte) {
 	case MSGLogin:
 		u.SendMessage(MSGLogin, []byte("欢迎回来"))
 		break
-	case MSGBank:
-		bank := MSGBankJSON{Num: 1, Structs: []StructBankJSON{{"test", 1, []BankJSON{{"test", "test", "test", "test"}}}}}
-		bankjson, _ := json.Marshal(bank)
-		u.SendMessage(MSGBank, bankjson)
+	case MSGClass:
+		bankjson, _ := json.Marshal(classes)
+		u.SendMessage(MSGClass, bankjson)
 	}
 }
 func (u User) login() {

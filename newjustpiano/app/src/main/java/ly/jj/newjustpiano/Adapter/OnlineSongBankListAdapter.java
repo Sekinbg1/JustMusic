@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import ly.jj.newjustpiano.R;
 import ly.jj.newjustpiano.tools.DatabaseRW;
@@ -25,24 +26,25 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
 
     private Context context;
     private LayoutInflater inflater;
-    private JSONObject[] cursor;
+    private JSONObject bankInfo;
+    private JSONArray cursor;
     private int Height;
     private int colNum;
 
-    public OnlineSongBankListAdapter(Context context, JSONObject[] cursor, int colNum) {
+    public OnlineSongBankListAdapter(Context context, JSONArray cursor, int colNum) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.cursor = cursor;
         this.colNum = colNum;
+        this.cursor = cursor;
     }
 
-    public void setCursor(JSONObject[] cursor) {
+    public void setCursor(JSONArray cursor) {
         this.cursor = cursor;
     }
 
     @Override
     public int getCount() {
-        return colNum * ((cursor.length - 1) / colNum + 1);
+        return colNum * ((cursor.size() - 1) / colNum + 1);
     }
 
     @Override
@@ -57,8 +59,8 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        if (cursor.length > i) {
-            JSONObject object = cursor[i];
+        if (cursor.size() > i) {
+            JSONObject object = cursor.getJSONObject(i);
             String name = object.getString("name");
             String info = object.getString("info");
             String creator = object.getString("creator");
@@ -119,7 +121,6 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
             }
             view.setLayoutParams(new ViewGroup.LayoutParams(-1, Height));
         }
-
         return view;
     }
 }
