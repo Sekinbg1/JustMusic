@@ -34,10 +34,44 @@ var (
 	users  = make([]User, 0)
 	isOpen = true
 
-	classes = ClassJSON{Classes: []Classes{{"test", []Bank{}}, {"test1", []Bank{}}}}
+	classes = Classes{
+		ClassesNames: []string{"test"},
+		Classes: map[string]Class{
+			"test": {
+				Name:      "test",
+				BankNames: []string{"test"},
+				Banks: map[string]Bank{
+					"test": {
+						Name:          "test",
+						Creator:       "test",
+						Info:          "test",
+						OnlineAccount: "test",
+						SongNames:     []string{"test"},
+						Songs: map[string]Song{
+							"test": {
+								Name:    "test",
+								Info:    "test",
+								Creator: "test",
+								Data:    []byte{},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
 )
 
 func main() {
+	classesJson := ClassesJSON{ClassesNames: classes.ClassesNames, Classes: map[string]ClassBanksJSON{}}
+	for _, c := range classes.Classes {
+		classesJson.Classes[c.Name] = ClassBanksJSON{Name: c.Name, BankNames: c.BankNames, Banks: map[string]ClassBankJSON{}}
+		for _, b := range c.Banks {
+			classesJson.Classes[c.Name].Banks[b.Name] = ClassBankJSON{Name: b.Name, Creator: b.Creator, Info: b.Info, OnlineAccount: b.OnlineAccount}
+		}
+	}
+	d, _ := json.Marshal(classesJson)
+	fmt.Println(string(d))
 	cert, err := tls.LoadX509KeyPair("server.crt", "private.key")
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{cert},
@@ -65,26 +99,55 @@ func main() {
 	}
 }
 
-type Classes struct {
-	Name  string `json:"name"`
-	Banks []Bank `json:"banks"`
+type Class struct {
+	Name      string          `json:"name"`
+	BankNames []string        `json:"bankNames"`
+	Banks     map[string]Bank `json:"banks"`
 }
-type Bank struct {
+type Classes struct {
+	ClassesNames []string         `json:"classesNames"`
+	Classes      map[string]Class `json:"classes"`
+}
+type ClassesJSON struct {
+	ClassesNames []string                  `json:"classesNames"`
+	Classes      map[string]ClassBanksJSON `json:"classes"`
+}
+type ClassBanksJSON struct {
+	Name      string                   `json:"name"`
+	BankNames []string                 `json:"bankNames"`
+	Banks     map[string]ClassBankJSON `json:"banks"`
+}
+type ClassBankJSON struct {
 	Name          string `json:"name"`
 	Creator       string `json:"creator"`
 	Info          string `json:"info"`
 	OnlineAccount string `json:"onlineAccount"`
-	songs         []Song
+}
+type BankJSON struct {
+	Name          string
+	Creator       string
+	Info          string
+	OnlineAccount string
+	SongNames     []string
+}
+type SongInfoJSON struct {
+	Name    string `json:"name"`
+	Info    string `json:"info,"`
+	Creator string `json:"creator"`
+}
+type Bank struct {
+	Name          string          `json:"name"`
+	Creator       string          `json:"creator"`
+	Info          string          `json:"info"`
+	OnlineAccount string          `json:"onlineAccount"`
+	SongNames     []string        `json:"songNames"`
+	Songs         map[string]Song `json:"songs"`
 }
 type Song struct {
 	Name    string `json:"name"`
 	Info    string `json:"info,"`
 	Creator string `json:"creator"`
 	Data    []byte `json:"data"`
-}
-
-type ClassJSON struct {
-	Classes []Classes `json:"classes"`
 }
 
 func (u User) OnMessage(message []byte) {
@@ -121,8 +184,16 @@ func (u User) OnMessage(message []byte) {
 		u.SendMessage(MSGLogin, []byte("欢迎回来"))
 		break
 	case MSGClass:
-		bankjson, _ := json.Marshal(classes)
-		u.SendMessage(MSGClass, bankjson)
+		classesJson := ClassesJSON{ClassesNames: classes.ClassesNames, Classes: map[string]ClassBanksJSON{}}
+		for _, c := range classes.Classes {
+			classesJson.Classes[c.Name] = ClassBanksJSON{Name: c.Name, BankNames: c.BankNames, Banks: map[string]ClassBankJSON{}}
+			for _, b := range c.Banks {
+				classesJson.Classes[c.Name].Banks[b.Name] = ClassBankJSON{Name: b.Name, Creator: b.Creator, Info: b.Info, OnlineAccount: b.OnlineAccount}
+			}
+		}
+		d, _ := json.Marshal(classesJson)
+		u.SendMessage(MSGClass, d)
+		break
 	}
 }
 func (u User) login() {

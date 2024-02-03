@@ -32,11 +32,11 @@ public class OnlineBank extends Activity {
             switch (msg.what) {
                 case 0:
                     JSONObject object = (JSONObject) msg.obj;
-                    JSONArray array = object.getJSONArray("classes");
+                    JSONArray array = object.getJSONArray("classesNames");
                     for (Object o :array) {
-                        JSONObject bank = (JSONObject) o;
+                        String bank = (String) o;
                         Button button = new Button(context);
-                        button.setText(bank.getString("name"));
+                        button.setText(bank);
                         button.setTextSize(textSize);
                         button.setBackground(getDrawable(R.drawable.button_background_t));
                         button.setOnClickListener(v -> {
@@ -61,7 +61,7 @@ public class OnlineBank extends Activity {
                         flipper_select.addView(button);
                         GridView gridView = new GridView(context);
                         gridView.setNumColumns(3);
-                        gridView.setAdapter(new OnlineSongBankListAdapter(context, bank.getJSONArray("banks"), 3));
+                        gridView.setAdapter(new OnlineSongBankListAdapter(context, object.getJSONObject("classes").getJSONObject(bank), 3));
                         setFlipperTouchListener(gridView, flipper, selectsList);
                         flipper.addView(gridView);
                     }
