@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/quic-go/quic-go"
+	"os"
 	"time"
 )
 
@@ -34,6 +35,7 @@ var (
 	users  = make([]User, 0)
 	isOpen = true
 
+	song, _ = os.ReadFile("Sincerely.mid")
 	classes = Classes{
 		ClassesNames: []string{"test"},
 		Classes: map[string]Class{
@@ -52,7 +54,7 @@ var (
 								Name:    "test",
 								Info:    "test",
 								Creator: "test",
-								Data:    []byte{},
+								Data:    song,
 							},
 						},
 					},
@@ -63,15 +65,6 @@ var (
 )
 
 func main() {
-	classesJson := ClassesJSON{ClassesNames: classes.ClassesNames, Classes: map[string]ClassBanksJSON{}}
-	for _, c := range classes.Classes {
-		classesJson.Classes[c.Name] = ClassBanksJSON{Name: c.Name, BankNames: c.BankNames, Banks: map[string]ClassBankJSON{}}
-		for _, b := range c.Banks {
-			classesJson.Classes[c.Name].Banks[b.Name] = ClassBankJSON{Name: b.Name, Creator: b.Creator, Info: b.Info, OnlineAccount: b.OnlineAccount}
-		}
-	}
-	d, _ := json.Marshal(classesJson)
-	fmt.Println(string(d))
 	cert, err := tls.LoadX509KeyPair("server.crt", "private.key")
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{cert},
@@ -124,11 +117,11 @@ type ClassBankJSON struct {
 	OnlineAccount string `json:"onlineAccount"`
 }
 type BankJSON struct {
-	Name          string
-	Creator       string
-	Info          string
-	OnlineAccount string
-	SongNames     []string
+	Name          string   `json:"name"`
+	Creator       string   `json:"creator"`
+	Info          string   `json:"info"`
+	OnlineAccount string   `json:"onlineAccount"`
+	SongNames     []string `json:"songNames"`
 }
 type SongInfoJSON struct {
 	Name    string `json:"name"`
@@ -194,8 +187,36 @@ func (u User) OnMessage(message []byte) {
 		d, _ := json.Marshal(classesJson)
 		u.SendMessage(MSGClass, d)
 		break
+	case MSGBank:
+		j := struct {
+			Class string `json:"class"`
+			Bank  string `json:"bank"`
+		}{}
+		json.Unmarshal(message, &j)
+		bank := classes.Classes[j.Class].Banks[j.Bank]
+		bankJson := BankJSON{
+			Name:          bank.Name,
+			Creator:       bank.Info,
+			Info:          bank.Info,
+			OnlineAccount: bank.OnlineAccount,
+			SongNames:     bank.SongNames}
+		d, _ := json.Marshal(bankJson)
+		u.SendMessage(MSGBank, d)
+		break
+	case MSGSong:
+		j := struct {
+			Class string `json:"class"`
+			Bank  string `json:"bank"`
+			Song  string `json:"song"`
+		}{}
+		json.Unmarshal(message, &j)
+		song := classes.Classes[j.Class].Banks[j.Bank].Songs[j.Song]
+		d, _ := json.Marshal(song)
+		u.SendMessage(MSGSong, d)
+		break
 	}
 }
+
 func (u User) login() {
 	u.logined = true
 }

@@ -33,7 +33,7 @@ public class OnlineBank extends Activity {
                 case 0:
                     JSONObject object = (JSONObject) msg.obj;
                     JSONArray array = object.getJSONArray("classesNames");
-                    for (Object o :array) {
+                    for (Object o : array) {
                         String bank = (String) o;
                         Button button = new Button(context);
                         button.setText(bank);
@@ -61,7 +61,7 @@ public class OnlineBank extends Activity {
                         flipper_select.addView(button);
                         GridView gridView = new GridView(context);
                         gridView.setNumColumns(3);
-                        gridView.setAdapter(new OnlineSongBankListAdapter(context, object.getJSONObject("classes").getJSONObject(bank), 3));
+                        gridView.setAdapter(new OnlineSongBankListAdapter(context, object.getJSONObject("classes").getJSONObject(bank), bank, 3));
                         setFlipperTouchListener(gridView, flipper, selectsList);
                         flipper.addView(gridView);
                     }
@@ -72,13 +72,8 @@ public class OnlineBank extends Activity {
     };
 
     private final List<Button> selectsList = new ArrayList<>();
-    private LayoutInflater inflater;
 
     private float textSize;
-
-    private String[] test1 = {"1", "2", "3", "4", "5", "6", "7", "8", "1", "2", "3", "4", "5", "6", "7", "8"};
-
-    private String[] test2 = {"2", "3", "4"};
     private LinearLayout flipper_select;
     private ViewFlipper flipper;
 
@@ -86,7 +81,6 @@ public class OnlineBank extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.online_banks);
-        inflater = LayoutInflater.from(this);
         textSize = new TextView(this).getTextSize() / getResources().getDisplayMetrics().density;
         flipper_select = findViewById(R.id.online_bank_flipper_select);
         flipper = findViewById(R.id.online_bank_flipper);
@@ -102,7 +96,6 @@ public class OnlineBank extends Activity {
                 Message msg = new Message();
                 msg.what = 0;
                 msg.obj = object;
-                System.out.println(new String(bytes));
                 handler.sendMessage(msg);
             }
         });

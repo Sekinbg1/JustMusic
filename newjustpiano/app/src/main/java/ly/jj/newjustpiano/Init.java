@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
@@ -84,42 +85,26 @@ public class Init extends Activity {
             cache = getCacheDir();
             sounds = new File(cache, "sounds");
             if (!sounds.exists()) sounds.mkdirs();
-            soundCaches = new File(cache, "decodes");
-            if (!soundCaches.exists()) soundCaches.mkdirs();
-            try {
-                String[] soundStr = getAssets().list("sounds");
-                for (int i = soundStr.length - 1; i >= 0; i--) {
-                    InputStream inputStream = getAssets().open("sounds/" + soundStr[i]);
-                    byte[] data = new byte[inputStream.available()];
-                    inputStream.read(data);
-                    new FileOutputStream(new File(sounds, soundStr[i])).write(data);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            File[] soundsFile = sounds.listFiles();
-            String[] cachesList = soundCaches.list();
-            List<String> caches = new ArrayList<>();
-            if (cachesList != null)
-                caches = Arrays.asList(cachesList);
             try {
                 MediaDecoder decoder = new MediaDecoder(30);
-                int i = 0;
-                for (File sound : soundsFile) {
-                    File outSound = new File(soundCaches, sound.getName().substring(0, sound.getName().indexOf('.')));
-                    if (!caches.contains(outSound.getName())) {
-                        decoder.set(sound.getPath());
-                        decoder.decode();
-                        new FileOutputStream(outSound).write(decoder.read());
-                    }
-                    i++;
-                    progress.setProgress(i * 100 / 88);
+                String[] soundStr = getAssets().list("sounds");
+                for (int i = soundStr.length - 1; i >= 0; i--) {
+                    if (!soundStr[i].endsWith("ogg")) continue;
+                    File outSound = new File(sounds, soundStr[i].substring(0, soundStr[i].indexOf('.')));
                     soundMixer.setSound(outSound);
+                    if (outSound.exists()) continue;
+                    AssetFileDescriptor afd = getAssets().openFd("sounds/" + soundStr[i]);
+                    decoder.set(afd);
+                    decoder.decode();
+                    progress.setProgress(i * 100 / soundStr.length);
+                    new FileOutputStream(outSound).write(decoder.read());
                 }
                 if (audioFormat == null) {
-                    decoder.set(soundsFile[0].getPath());
+                    AssetFileDescriptor afd = getAssets().openFd("sounds/" + soundStr[0]);
+                    decoder.set(afd);
                     decoder.decode();
                 }
+                progress.setProgress(100);
                 decoder.release();
             } catch (IOException e) {
                 e.printStackTrace();

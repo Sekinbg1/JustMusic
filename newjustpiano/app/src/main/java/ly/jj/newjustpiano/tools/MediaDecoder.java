@@ -1,7 +1,9 @@
 package ly.jj.newjustpiano.tools;
 
 
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import ly.jj.newjustpiano.items.StaticItems;
@@ -20,7 +22,22 @@ public class MediaDecoder {
     public MediaDecoder(int bufferTime) {
         this.bufferTime = bufferTime;
     }
-
+    public void set(AssetFileDescriptor afd) {
+        extractor = new MediaExtractor();
+        try {
+            extractor.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            extractor.selectTrack(0);
+            MediaFormat inputFormat = extractor.getTrackFormat(0);
+            if (!inputFormat.getString(MediaFormat.KEY_MIME).startsWith("audio")) {
+                return;
+            }
+            mediaCodec = MediaCodec.createDecoderByType(inputFormat.getString(MediaFormat.KEY_MIME));
+            mediaCodec.configure(inputFormat, null, null, 0);
+            mediaCodec.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void set(String path) {
         extractor = new MediaExtractor();
         try {

@@ -8,10 +8,9 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import com.alibaba.fastjson2.JSONObject;
 import ly.jj.newjustpiano.items.StaticItems;
 import ly.jj.newjustpiano.tools.Hash;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static ly.jj.newjustpiano.items.StaticItems.*;
 
@@ -65,13 +64,9 @@ public class Online extends Activity {
                     public void onMessage(byte[] bytes) {
                         String salt = new String(bytes);
                         System.out.println("geted salt:" + salt);
-                        try {
                             jsonObject.put("name", user.getText().toString());
                             jsonObject.put("passwd", new String(Hash.hash((passwd.getText().toString() + salt).getBytes())));
                             StaticItems.client.sendMessage(LOGIN, jsonObject.toString().getBytes());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
                 });
                 System.out.println("get salt");

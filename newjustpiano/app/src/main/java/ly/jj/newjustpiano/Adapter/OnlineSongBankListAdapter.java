@@ -1,7 +1,10 @@
 package ly.jj.newjustpiano.Adapter;
 
+import Client.OnMessageListener;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +15,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import ly.jj.newjustpiano.R;
+import ly.jj.newjustpiano.items.StaticItems;
 import ly.jj.newjustpiano.tools.DatabaseRW;
 import ly.jj.newjustpiano.tools.SequenceExtractor;
 
@@ -28,12 +33,14 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
     private JSONObject cursor;
     private int Height;
     private int colNum;
+    private String ClassName;
 
-    public OnlineSongBankListAdapter(Context context, JSONObject cursor, int colNum) {
+    public OnlineSongBankListAdapter(Context context, JSONObject cursor, String name, int colNum) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.colNum = colNum;
         this.cursor = cursor;
+        this.ClassName = name;
     }
 
     public void setCursor(JSONObject cursor) {
@@ -42,7 +49,8 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return colNum * ((cursor.size() - 1) / colNum + 1);
+        int size = cursor.getJSONArray("bankNames").size();
+        return colNum * ((size - 1) / colNum + 1);
     }
 
     @Override
@@ -57,7 +65,7 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        if (cursor.size() > i) {
+        if (cursor.getJSONArray("bankNames").size() > i) {
             String bankName = (String) cursor.getJSONArray("bankNames").get(i);
             JSONObject object = cursor.getJSONObject("banks").getJSONObject(bankName);
             String name = object.getString("name");
@@ -77,33 +85,73 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                     if (finalView.findViewById(R.id.song_bank_info_text).getVisibility() == VISIBLE) {
                         finalView.findViewById(R.id.song_bank_info_text).setVisibility(INVISIBLE);
                         finalView.findViewById(R.id.song_bank_info_list).setVisibility(VISIBLE);
-                        Cursor sl = database.readByKey("bank", name);
-                        String[] l = new String[sl.getCount()];
-                        for (int j = 0; j < sl.getCount(); j++) {
-                            sl.moveToPosition(j);
-                            l[j] = sl.getString(DatabaseRW.SONG_NAME);
-                        }
-                        ((ListView) finalView1.findViewById(R.id.song_bank_list)).setAdapter(new ArrayAdapter(finalView1.getContext(),
-                                R.layout.online_songs_bank_songlist_adapter, R.id.online_songs_songlist_adapter_text, l) {
-                            @NonNull
-                            @Override
-                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                                convertView = super.getView(position, convertView, parent);
-                                convertView.findViewById(R.id.online_songs_songlist_adapter_music).setOnClickListener(view -> {
-                                    byte[] song = database.getSong(name, getItem(position).toString());
-                                    SequenceExtractor sequenceExtractor = new SequenceExtractor(song);
-                                    sequenceExtractor.extractor();
-                                    sequenceExtractor.setOnNextListener((value, volume) -> soundMixer.play(value, volume));
-                                    if (playingThread != null) {
-                                        playingThread.interrupt();
-                                        playingThread = null;
+                        Handler handler = new Handler((message) -> {
+                            if (message.what == 0) {
+                                JSONObject json = (JSONObject) message.obj;
+                                JSONArray array = json.getJSONArray("songNames");
+                                String[] songs = new String[array.size()];
+                                for (int j = 0; j < array.size(); j++) {
+                                    songs[j] = (String) array.get(j);
+                                }
+                                ((ListView) finalView1.findViewById(R.id.song_bank_list)).setAdapter(new ArrayAdapter(finalView1.getContext(),
+                                        R.layout.online_songs_bank_songlist_adapter, R.id.online_songs_songlist_adapter_text, songs) {
+                                    @NonNull
+                                    @Override
+                                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                        convertView = super.getView(position, convertView, parent);
+                                        convertView.findViewById(R.id.online_songs_songlist_adapter_music).setOnClickListener(view -> {
+                                            JSONObject object1 = new JSONObject();
+                                            object1.put("class", ClassName);
+                                            object1.put("bank", name);
+                                            object1.put("song", getItem(position).toString());
+                                            client.addOnMessageListener(SONG, new OnMessageListener() {
+                                                @Override
+                                                public void onEnd() {
+
+                                                }
+
+                                                @Override
+                                                public void onMessage(byte[] bytes) {
+                                                    JSONObject object2=JSONObject.parseObject(new String(bytes));
+                                                    SequenceExtractor sequenceExtractor = new SequenceExtractor(object2.getBytes("data"));
+                                                    sequenceExtractor.extractor();
+                                                    sequenceExtractor.setOnNextListener((value, volume) -> soundMixer.play(value, volume));
+                                                    if (playingThread != null) {
+                                                        playingThread.interrupt();
+                                                        playingThread = null;
+                                                    }
+                                                    playingThread = new Thread(sequenceExtractor::sequence);
+                                                    playingThread.start();
+                                                }
+                                            });
+                                            client.sendMessage(SONG, object1.toJSONString().getBytes());
+                                        });
+                                        return convertView;
                                     }
-                                    playingThread = new Thread(sequenceExtractor::sequence);
-                                    playingThread.start();
                                 });
-                                return convertView;
+                            }
+                            return true;
+                        });
+                        client.addOnMessageListener(BANK, new OnMessageListener() {
+                            @Override
+                            public void onEnd() {
+
+                            }
+
+                            @Override
+                            public void onMessage(byte[] bytes) {
+                                JSONObject json = JSONObject.parseObject(new String(bytes));
+                                Message message = new Message();
+                                message.what = 0;
+                                message.obj = json;
+                                handler.sendMessage(message);
                             }
                         });
+                        JSONObject object1 = new JSONObject();
+                        object1.put("class", ClassName);
+                        object1.put("bank", name);
+                        client.sendMessage(BANK, object1.toJSONString().getBytes());
+
                     } else {
                         finalView.findViewById(R.id.song_bank_info_list).setVisibility(INVISIBLE);
                         finalView.findViewById(R.id.song_bank_info_text).setVisibility(VISIBLE);

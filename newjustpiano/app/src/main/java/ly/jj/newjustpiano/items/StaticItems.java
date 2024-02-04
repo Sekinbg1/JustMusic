@@ -26,9 +26,9 @@ public class StaticItems {
     public final static byte LOGIN = 2;
     public final static byte CLASS = 3;
     public final static byte BANK = 4;
+    public final static byte SONG=5;
 
 
-    public final static byte SONG = 4;
     public static String applicationProtocolId = "quic-JPServer";
 
     public static Thread playingThread;
@@ -36,7 +36,6 @@ public class StaticItems {
     public static File data;
     public static File cache;
     public static File sounds;
-    public static File soundCaches;
     public static float freshRate;
 
     public static String[] switchSettings = {"123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789", "123", "456", "789"};
