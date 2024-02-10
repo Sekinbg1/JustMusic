@@ -24,7 +24,7 @@ import static ly.jj.newjustpiano.items.StaticItems.ActivityCount;
 import static ly.jj.newjustpiano.items.StaticItems.database;
 import static ly.jj.newjustpiano.tools.StaticTools.testaccounts;
 
-public class SongsBankSongAdd extends Activity {
+public class SongsBankSongAdd extends ly.jj.newjustpiano.Activity {
     TextView bank;
     EditText name;
     EditText file;
@@ -110,16 +110,5 @@ public class SongsBankSongAdd extends Activity {
             this.name.setText(name.substring(0, name.lastIndexOf(".")).substring(0, name.indexOf("-")));
         else
             this.name.setText(name.substring(0, name.lastIndexOf(".")));
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }

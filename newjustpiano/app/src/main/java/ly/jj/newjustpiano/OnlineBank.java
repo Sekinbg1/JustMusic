@@ -21,7 +21,7 @@ import java.util.List;
 import static ly.jj.newjustpiano.Local.setFlipperTouchListener;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 
-public class OnlineBank extends Activity {
+public class OnlineBank extends ly.jj.newjustpiano.Activity {
     Context context = this;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {

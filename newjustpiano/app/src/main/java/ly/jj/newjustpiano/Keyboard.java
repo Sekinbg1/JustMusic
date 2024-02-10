@@ -13,7 +13,7 @@ import ly.jj.newjustpiano.views.KeyboardView;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.tools.StaticTools.setFullScreen;
 
-public class Keyboard extends Activity {
+public class Keyboard extends ly.jj.newjustpiano.Activity {
     @Override
     protected void onPause() {
         super.onPause();

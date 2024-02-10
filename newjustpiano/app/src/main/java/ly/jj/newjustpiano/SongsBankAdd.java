@@ -13,7 +13,7 @@ import static ly.jj.newjustpiano.items.StaticItems.ActivityCount;
 import static ly.jj.newjustpiano.items.StaticItems.database;
 import static ly.jj.newjustpiano.tools.StaticTools.testaccounts;
 
-public class SongsBankAdd extends Activity {
+public class SongsBankAdd extends ly.jj.newjustpiano.Activity {
     private EditText name, creator, info;
 
     ImageView pri_help, online_help;
@@ -67,16 +67,5 @@ public class SongsBankAdd extends Activity {
         });
         findViewById(R.id.songs_bank_add_cancel).setOnClickListener(view ->
                 this.finish());
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }

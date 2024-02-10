@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 
-public class OnlineFriends extends Activity {
+public class OnlineFriends extends ly.jj.newjustpiano.Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

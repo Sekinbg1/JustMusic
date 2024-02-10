@@ -18,7 +18,7 @@ import static android.view.View.INVISIBLE;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.items.StaticItems.ActivityCount;
 
-public class Local extends Activity {
+public class Local extends ly.jj.newjustpiano.Activity {
     private final List<Button> selectsList = new ArrayList<>();
     private LayoutInflater inflater;
     private Button stopPlay;
@@ -110,17 +110,5 @@ public class Local extends Activity {
                 return false;
             }
         });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }

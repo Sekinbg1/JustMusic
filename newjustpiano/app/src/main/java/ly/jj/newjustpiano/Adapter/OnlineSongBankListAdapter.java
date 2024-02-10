@@ -2,6 +2,7 @@ package ly.jj.newjustpiano.Adapter;
 
 import Client.OnMessageListener;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.Message;
@@ -17,10 +18,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import ly.jj.newjustpiano.Keyboard;
 import ly.jj.newjustpiano.R;
 import ly.jj.newjustpiano.items.StaticItems;
 import ly.jj.newjustpiano.tools.DatabaseRW;
 import ly.jj.newjustpiano.tools.SequenceExtractor;
+import ly.jj.newjustpiano.tools.StaticTools;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -99,32 +102,23 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                                     @Override
                                     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                                         convertView = super.getView(position, convertView, parent);
+                                        convertView.findViewById(R.id.online_songs_songlist_adapter_play).setOnClickListener(view -> {
+                                           JSONObject SongJSON= StaticTools.getSong(true,ClassName,bankName,getItem(position).toString());
+                                            Intent intent = new Intent(context, Keyboard.class);
+                                            intent.putExtra("song", SongJSON.getBytes("data"));
+                                            context.startActivity(intent);
+                                        });
                                         convertView.findViewById(R.id.online_songs_songlist_adapter_music).setOnClickListener(view -> {
-                                            JSONObject object1 = new JSONObject();
-                                            object1.put("class", ClassName);
-                                            object1.put("bank", name);
-                                            object1.put("song", getItem(position).toString());
-                                            client.addOnMessageListener(SONG, new OnMessageListener() {
-                                                @Override
-                                                public void onEnd() {
-
-                                                }
-
-                                                @Override
-                                                public void onMessage(byte[] bytes) {
-                                                    JSONObject object2=JSONObject.parseObject(new String(bytes));
-                                                    SequenceExtractor sequenceExtractor = new SequenceExtractor(object2.getBytes("data"));
-                                                    sequenceExtractor.extractor();
-                                                    sequenceExtractor.setOnNextListener((value, volume) -> soundMixer.play(value, volume));
-                                                    if (playingThread != null) {
-                                                        playingThread.interrupt();
-                                                        playingThread = null;
-                                                    }
-                                                    playingThread = new Thread(sequenceExtractor::sequence);
-                                                    playingThread.start();
-                                                }
-                                            });
-                                            client.sendMessage(SONG, object1.toJSONString().getBytes());
+                                            JSONObject SongJSON= StaticTools.getSong(true,ClassName,bankName,getItem(position).toString());
+                                            SequenceExtractor sequenceExtractor = new SequenceExtractor(SongJSON.getBytes("data"));
+                                            sequenceExtractor.extractor();
+                                            sequenceExtractor.setOnNextListener((value, volume) -> soundMixer.play(value, volume));
+                                            if (playingThread != null) {
+                                                playingThread.interrupt();
+                                                playingThread = null;
+                                            }
+                                            playingThread = new Thread(sequenceExtractor::sequence);
+                                            playingThread.start();
                                         });
                                         return convertView;
                                     }

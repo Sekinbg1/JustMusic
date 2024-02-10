@@ -13,7 +13,7 @@ import ly.jj.newjustpiano.views.ListBoxGirdview;
 import static ly.jj.newjustpiano.items.StaticItems.ActivityCount;
 import static ly.jj.newjustpiano.items.StaticItems.database;
 
-public class Songs extends Activity {
+public class Songs extends ly.jj.newjustpiano.Activity {
     private ListBoxGirdview list;
     private SongBankListAdapter adapter;
     private EditText search;
@@ -56,16 +56,5 @@ public class Songs extends Activity {
         JSONObject[] cursor = database.getBanks(search.getText().toString());
         adapter.setCursor(cursor);
         list.setAdapter(adapter);
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }

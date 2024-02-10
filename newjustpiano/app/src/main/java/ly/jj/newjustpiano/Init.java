@@ -30,7 +30,7 @@ import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.tools.SoundMixer.AUDIO_MODE_DEFAULT;
 import static ly.jj.newjustpiano.tools.StaticTools.setFullScreen;
 
-public class Init extends Activity {
+public class Init extends ly.jj.newjustpiano.Activity {
 
     ProgressBar progress;
 

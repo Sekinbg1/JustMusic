@@ -1,7 +1,6 @@
 package ly.jj.newjustpiano;
 
 import Client.OnMessageListener;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +16,7 @@ import java.util.Arrays;
 import static java.lang.Thread.sleep;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 
-public class Main extends Activity {
+public class Main extends ly.jj.newjustpiano.Activity {
 
     Context context = this;
     Handler handler = new Handler(Looper.myLooper(), msg -> {
@@ -102,17 +101,5 @@ public class Main extends Activity {
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }

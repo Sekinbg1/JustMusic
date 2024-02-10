@@ -15,7 +15,7 @@ import ly.jj.newjustpiano.tools.Hash;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 
 
-public class Online extends Activity {
+public class Online extends ly.jj.newjustpiano.Activity {
     Context context = this;
 
     @Override
@@ -82,17 +82,5 @@ public class Online extends Activity {
         super.onDestroy();
         client.close();
         client = null;
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ActivityCount--;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ActivityCount++;
     }
 }
