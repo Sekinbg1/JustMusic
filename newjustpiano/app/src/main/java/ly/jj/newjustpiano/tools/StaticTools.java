@@ -21,6 +21,51 @@ import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.items.StaticItems.SONG;
 
 public class StaticTools {
+    public  static class OnClientMessage {
+        protected  void Error(){};
+
+        protected   void Message(byte[] data){};
+    }
+
+    public static void sendMessageFuncAsync(byte MSGType, byte[] data, OnClientMessage message) {
+        client.addOnMessageListener(MSGType, new OnMessageListener() {
+            @Override
+            public void onEnd() {
+                message.Error();
+            }
+
+            @Override
+            public void onMessage(byte[] bytes) {
+                message.Message(bytes);
+            }
+        });
+        client.sendMessage(MSGType, data);
+    }
+
+    public static byte[] sendMessageFuncSync(byte MSGType, byte[] data) {
+        final byte[][] msg = {new byte[0]};
+        client.addOnMessageListener(MSGType, new OnMessageListener() {
+            @Override
+            public void onEnd() {
+                msg[0] = new byte[1];
+            }
+
+            @Override
+            public void onMessage(byte[] bytes) {
+                msg[0] = bytes;
+            }
+        });
+        client.sendMessage(MSGType, data);
+        try {
+            while (msg[0].length == 0) {
+                sleep(10);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return msg[0];
+    }
+
     public static String[] testaccounts = {"test", "test1"};
 
     public static void setFullScreen(View view) {
@@ -34,30 +79,10 @@ public class StaticTools {
 
     public static JSONObject getSong(boolean online, String Class, String bank, String Song) {
         JSONObject object1 = new JSONObject();
-        final JSONObject[] object2 = {null};
         object1.put("class", Class);
         object1.put("bank", bank);
         object1.put("song", Song);
-        client.addOnMessageListener(SONG, new OnMessageListener() {
-            @Override
-            public void onEnd() {
-
-            }
-
-            @Override
-            public void onMessage(byte[] bytes) {
-                object2[0] = JSONObject.parseObject(new String(bytes));
-            }
-        });
-        client.sendMessage(SONG, object1.toJSONString().getBytes());
-        try {
-            while (object2[0] == null) {
-                sleep(100);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return object2[0];
+        return JSONObject.parseObject(new String(sendMessageFuncSync(SONG, object1.toJSONString().getBytes())));
     }
 
     public static Bitmap takeScreenShot(Activity activity) {

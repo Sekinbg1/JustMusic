@@ -1,6 +1,7 @@
 package ly.jj.newjustpiano;
 
 import Client.OnMessageListener;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,16 +11,19 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.widget.Toast;
 import ly.jj.newjustpiano.items.StaticItems;
+import ly.jj.newjustpiano.tools.StaticTools;
 
 import java.util.Arrays;
 
 import static java.lang.Thread.sleep;
 import static ly.jj.newjustpiano.items.StaticItems.*;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
 
 public class Main extends ly.jj.newjustpiano.Activity {
 
+    @SuppressLint("StaticFieldLeak")
     Context context = this;
-    Handler handler = new Handler(Looper.myLooper(), msg -> {
+    public Handler handler = new Handler(Looper.myLooper(), msg -> {
         switch (msg.what) {
             case 0:
                 Toast toast = Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT);
@@ -38,17 +42,17 @@ public class Main extends ly.jj.newjustpiano.Activity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.main);
-
         findViewById(R.id.main_local).setOnClickListener(v -> {
             Intent intent = new Intent(this, Local.class);
             startActivity(intent);
         });
         findViewById(R.id.main_online).setOnClickListener(v -> {
-            StaticItems.client = new Client.ConnectClient();
-            StaticItems.client.init();
-            StaticItems.client.addOnMessageListener(MSG, new OnMessageListener() {
+            client = new Client.ConnectClient();
+            client.init();
+            client.addOnMessageListener(MSG, new OnMessageListener() {
                 @Override
                 public void onEnd() {
+
                     if (StaticItems.client != null && !StaticItems.client.isConnected()) {
                         Message msg = new Message();
                         msg.what = 0;
@@ -58,15 +62,15 @@ public class Main extends ly.jj.newjustpiano.Activity {
                 }
 
                 @Override
-                public void onMessage(byte[] bytes) {
+                public void onMessage(byte[] data) {
                     Intent intent = new Intent(context, Online.class);
-                    intent.putExtra("message", new String(Arrays.copyOfRange(bytes, 1, bytes.length)));
-                    intent.putExtra("isOpen",  bytes[0]==0);
+                    intent.putExtra("message", new String(Arrays.copyOfRange(data, 1, data.length)));
+                    intent.putExtra("isOpen", data[0] == 0);
                     startActivity(intent);
                 }
             });
-            StaticItems.client.connect("192.168.5.61:1130", StaticItems.applicationProtocolId);
-            StaticItems.client.sendMessage(MSG, null);
+            client.connect("192.168.5.243:1130", StaticItems.applicationProtocolId);
+            client.sendMessage(MSG,null);
         });
         findViewById(R.id.main_songs).setOnClickListener(v -> {
             Intent intent = new Intent(this, Songs.class);

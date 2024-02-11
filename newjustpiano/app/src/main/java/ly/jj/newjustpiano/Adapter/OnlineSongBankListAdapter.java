@@ -28,6 +28,8 @@ import ly.jj.newjustpiano.tools.StaticTools;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static ly.jj.newjustpiano.items.StaticItems.*;
+import static ly.jj.newjustpiano.items.StaticItems.data;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
 
 public class OnlineSongBankListAdapter extends BaseAdapter {
 
@@ -103,13 +105,13 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                                     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                                         convertView = super.getView(position, convertView, parent);
                                         convertView.findViewById(R.id.online_songs_songlist_adapter_play).setOnClickListener(view -> {
-                                           JSONObject SongJSON= StaticTools.getSong(true,ClassName,bankName,getItem(position).toString());
+                                            JSONObject SongJSON = StaticTools.getSong(true, ClassName, bankName, getItem(position).toString());
                                             Intent intent = new Intent(context, Keyboard.class);
                                             intent.putExtra("song", SongJSON.getBytes("data"));
                                             context.startActivity(intent);
                                         });
                                         convertView.findViewById(R.id.online_songs_songlist_adapter_music).setOnClickListener(view -> {
-                                            JSONObject SongJSON= StaticTools.getSong(true,ClassName,bankName,getItem(position).toString());
+                                            JSONObject SongJSON = StaticTools.getSong(true, ClassName, bankName, getItem(position).toString());
                                             SequenceExtractor sequenceExtractor = new SequenceExtractor(SongJSON.getBytes("data"));
                                             sequenceExtractor.extractor();
                                             sequenceExtractor.setOnNextListener((value, volume) -> soundMixer.play(value, volume));
@@ -126,26 +128,20 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                             }
                             return true;
                         });
-                        client.addOnMessageListener(BANK, new OnMessageListener() {
+                        JSONObject object1 = new JSONObject();
+                        object1.put("class", ClassName);
+                        object1.put("bank", name);
+                        sendMessageFuncAsync(BANK, object1.toJSONString().getBytes(), new StaticTools.OnClientMessage() {
                             @Override
-                            public void onEnd() {
-
-                            }
-
-                            @Override
-                            public void onMessage(byte[] bytes) {
-                                JSONObject json = JSONObject.parseObject(new String(bytes));
+                            protected void Message(byte[] data) {
+                                super.Message(data);
+                                JSONObject json = JSONObject.parseObject(new String(data));
                                 Message message = new Message();
                                 message.what = 0;
                                 message.obj = json;
                                 handler.sendMessage(message);
                             }
                         });
-                        JSONObject object1 = new JSONObject();
-                        object1.put("class", ClassName);
-                        object1.put("bank", name);
-                        client.sendMessage(BANK, object1.toJSONString().getBytes());
-
                     } else {
                         finalView.findViewById(R.id.song_bank_info_list).setVisibility(INVISIBLE);
                         finalView.findViewById(R.id.song_bank_info_text).setVisibility(VISIBLE);

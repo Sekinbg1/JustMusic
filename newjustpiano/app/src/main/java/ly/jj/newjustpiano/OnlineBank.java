@@ -14,12 +14,15 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import ly.jj.newjustpiano.Adapter.OnlineSongBankListAdapter;
+import ly.jj.newjustpiano.tools.StaticTools;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static ly.jj.newjustpiano.Local.setFlipperTouchListener;
 import static ly.jj.newjustpiano.items.StaticItems.*;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncSync;
 
 public class OnlineBank extends ly.jj.newjustpiano.Activity {
     Context context = this;
@@ -84,21 +87,16 @@ public class OnlineBank extends ly.jj.newjustpiano.Activity {
         textSize = new TextView(this).getTextSize() / getResources().getDisplayMetrics().density;
         flipper_select = findViewById(R.id.online_bank_flipper_select);
         flipper = findViewById(R.id.online_bank_flipper);
-        client.addOnMessageListener(CLASS, new OnMessageListener() {
+        sendMessageFuncAsync(CLASS,null,new StaticTools.OnClientMessage(){
             @Override
-            public void onEnd() {
-
-            }
-
-            @Override
-            public void onMessage(byte[] bytes) {
-                JSONObject object = JSONObject.parseObject(new String(bytes));
+            protected void Message(byte[] data) {
+                super.Message(data);
+                JSONObject object = JSONObject.parseObject(new String(data));
                 Message msg = new Message();
                 msg.what = 0;
                 msg.obj = object;
                 handler.sendMessage(msg);
             }
         });
-        client.sendMessage(CLASS, null);
     }
 }

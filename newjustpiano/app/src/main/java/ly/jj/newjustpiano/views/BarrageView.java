@@ -63,9 +63,9 @@ public class BarrageView extends View {
                 List<BarrageKey> list = new ArrayList<>();
                 for (BarrageKey key : drawKeys) {
                     key.addTime(step);
-                    if (key.length > viewHeight + barrageHeight) {
+                    if (key.length > viewHeight + barrageHeight + barrageHeight / 2) {
                         list.add(key);
-                        doLevel(4);
+                        doLevel(3);
                     }
                 }
                 if (autoPlay) {
@@ -77,7 +77,7 @@ public class BarrageView extends View {
                 list.clear();
                 for (BarrageKey key : playKeys) {
                     key.addTime(step);
-                    if (key.length > viewHeight) list.add(key);
+                    if (key.length > viewHeight + barrageHeight / 2) list.add(key);
                 }
                 playKeys.removeAll(list);
                 for (BarrageKey key : list) {
@@ -150,11 +150,13 @@ public class BarrageView extends View {
             addsource(combo > 14 ? 20 : 5 + combo);
             combo++;
         } else if (level == 1) {
-            addsource(4);
-            combo = 0;
+            addsource(combo > 11 ? 15 : 4 + combo);
+            //combo = 0;
         } else if (level == 2) {
             addsource(2);
             combo = 0;
+        } else if (level == 3) {
+            //addsource(-1);
         } else if (level == 4) {
             addsource(-5);
             combo = 0;
@@ -168,12 +170,17 @@ public class BarrageView extends View {
         source = Integer.toString(sourceI);
     }
 
+    private int abs(int a) {
+        if (a < 0) return -a;
+        else return a;
+    }
+
     public void onkeyboard(int value) {
         boolean played = false;
         for (BarrageKey key : drawKeys) {
             if (key.value % drawCount == value) {
                 if (viewHeight - key.length - 4 * barrageHeight < 0) {
-                    int delta = (int) (viewHeight - key.length);
+                    int delta = abs((int) (viewHeight - key.length + barrageHeight / 2));
                     drawKeys.remove(key);
                     StaticItems.soundMixer.play(key.value, key.volume);
                     played = true;
@@ -199,14 +206,6 @@ public class BarrageView extends View {
         }
         if (!played) {
             doLevel(4);
-            
-            
-            
-            
-            
-            
-            
-            
             if (drawKeys.isEmpty())
                 StaticItems.soundMixer.play(value + 12 * 4, 0x7f);
             else
