@@ -1,16 +1,21 @@
 package ly.jj.newjustpiano.tools;
 
 import Client.OnMessageListener;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -21,22 +26,49 @@ import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.items.StaticItems.SONG;
 
 public class StaticTools {
-    public  static class OnClientMessage {
-        protected  void Error(){};
+    public static class OnClientMessage {
+        protected void Error() {
+        }
 
-        protected   void Message(byte[] data){};
+        ;
+
+        protected void Message(byte[] data) {
+        }
+
+        ;
     }
+
+    private final static Handler handler = new Handler(Looper.myLooper(), msg -> {
+        switch (msg.what) {
+            case 0:
+                OnClientMessage onClientMessage = (OnClientMessage) msg.obj;
+                onClientMessage.Error();
+                return true;
+            case 1:
+                OnClientMessage onClientMessage1 = (OnClientMessage) ((Object[]) msg.obj)[0];
+                byte[] data = (byte[]) ((Object[]) msg.obj)[1];
+                onClientMessage1.Message(data);
+                return true;
+        }
+        return false;
+    });
 
     public static void sendMessageFuncAsync(byte MSGType, byte[] data, OnClientMessage message) {
         client.addOnMessageListener(MSGType, new OnMessageListener() {
             @Override
             public void onEnd() {
-                message.Error();
+                Message msg = new Message();
+                msg.what = 0;
+                msg.obj = message;
+                handler.sendMessage(msg);
             }
 
             @Override
             public void onMessage(byte[] bytes) {
-                message.Message(bytes);
+                Message msg = new Message();
+                msg.what = 1;
+                msg.obj = new Object[]{message, bytes};
+                handler.sendMessage(msg);
             }
         });
         client.sendMessage(MSGType, data);

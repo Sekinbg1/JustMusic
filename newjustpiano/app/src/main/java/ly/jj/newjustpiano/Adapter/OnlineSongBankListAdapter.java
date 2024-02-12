@@ -90,9 +90,14 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                     if (finalView.findViewById(R.id.song_bank_info_text).getVisibility() == VISIBLE) {
                         finalView.findViewById(R.id.song_bank_info_text).setVisibility(INVISIBLE);
                         finalView.findViewById(R.id.song_bank_info_list).setVisibility(VISIBLE);
-                        Handler handler = new Handler((message) -> {
-                            if (message.what == 0) {
-                                JSONObject json = (JSONObject) message.obj;
+                        JSONObject object1 = new JSONObject();
+                        object1.put("class", ClassName);
+                        object1.put("bank", name);
+                        sendMessageFuncAsync(BANK, object1.toJSONString().getBytes(), new StaticTools.OnClientMessage() {
+                            @Override
+                            protected void Message(byte[] data) {
+                                super.Message(data);
+                                JSONObject json = JSONObject.parseObject(new String(data));
                                 JSONArray array = json.getJSONArray("songNames");
                                 String[] songs = new String[array.size()];
                                 for (int j = 0; j < array.size(); j++) {
@@ -125,21 +130,6 @@ public class OnlineSongBankListAdapter extends BaseAdapter {
                                         return convertView;
                                     }
                                 });
-                            }
-                            return true;
-                        });
-                        JSONObject object1 = new JSONObject();
-                        object1.put("class", ClassName);
-                        object1.put("bank", name);
-                        sendMessageFuncAsync(BANK, object1.toJSONString().getBytes(), new StaticTools.OnClientMessage() {
-                            @Override
-                            protected void Message(byte[] data) {
-                                super.Message(data);
-                                JSONObject json = JSONObject.parseObject(new String(data));
-                                Message message = new Message();
-                                message.what = 0;
-                                message.obj = json;
-                                handler.sendMessage(message);
                             }
                         });
                     } else {
