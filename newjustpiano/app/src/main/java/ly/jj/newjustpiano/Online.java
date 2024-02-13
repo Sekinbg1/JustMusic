@@ -13,8 +13,10 @@ import ly.jj.newjustpiano.items.StaticItems;
 import ly.jj.newjustpiano.tools.Hash;
 import ly.jj.newjustpiano.tools.StaticTools;
 
+import java.util.Arrays;
+
 import static ly.jj.newjustpiano.items.StaticItems.*;
-import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
+import static ly.jj.newjustpiano.tools.StaticTools.*;
 
 
 public class Online extends ly.jj.newjustpiano.Activity {
@@ -45,24 +47,39 @@ public class Online extends ly.jj.newjustpiano.Activity {
                     @Override
                     protected void Message(byte[] data) {
                         super.Message(data);
-                        String salt = new String(data);
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("name", user.getText().toString());
-                        jsonObject.put("passwd", new String(Hash.hash((passwd.getText().toString() + salt).getBytes())));
+                        byte[] hash1 = Hash.hash(passwd.getText().toString().getBytes());
+                        byte[] hash2 = new byte[hash1.length + data.length];
+                        System.arraycopy(hash1, 0, hash2, 0, hash1.length);
+                        System.arraycopy(data, 0, hash2, hash1.length, data.length);
+                        byte[] hash = Hash.hash(hash2);
+                        int[] uhash = new int[hash.length];
+                        for (int i = 0; i < hash.length; i++) {
+                            uhash[i] = hash[i] & 0xff;
+                        }
+                        jsonObject.put("passwd", uhash);
                         sendMessageFuncAsync(LOGIN, jsonObject.toJSONString().getBytes(), new StaticTools.OnClientMessage() {
                             @Override
                             protected void Message(byte[] data) {
                                 super.Message(data);
-                                System.out.println(new String(data));
-                                Intent intent = new Intent(context, OnlineMain.class);
-                                intent.putExtra("message", new String(data));
-                                startActivity(intent);
+                                byte login = data[0];
+                                data = Arrays.copyOfRange(data, 1, data.length);
+                                if (login == 0) {
+                                    JSONObject object = JSONObject.parseObject(new String(data));
+                                    setOnlineHashKey(jsonObject.getBytes("key"));
+                                    Intent intent = new Intent(context, OnlineMain.class);
+                                    intent.putExtra("message", object.getString("msg"));
+                                    startActivity(intent);
+                                } else {
+                                    msg.setText(new String(data));
+                                }
                             }
                         });
                     }
                 });
             } else {
-                msg.setText(getIntent().getStringExtra("message") + "暂不开放");
+                msg.setText(getIntent().getStringExtra("message"));
             }
         });
     }

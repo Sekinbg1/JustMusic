@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 import static java.lang.Thread.sleep;
 import static ly.jj.newjustpiano.items.StaticItems.*;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessage;
 import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
 
 public class Main extends ly.jj.newjustpiano.Activity {
@@ -69,8 +70,8 @@ public class Main extends ly.jj.newjustpiano.Activity {
                     startActivity(intent);
                 }
             });
-            client.connect("192.168.5.243:1130", StaticItems.applicationProtocolId);
-            client.sendMessage(MSG,null);
+            client.connect(Server, applicationProtocolId);
+            sendMessage(MSG,null);
         });
         findViewById(R.id.main_songs).setOnClickListener(v -> {
             Intent intent = new Intent(this, Songs.class);

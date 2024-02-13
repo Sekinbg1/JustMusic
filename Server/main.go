@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
@@ -14,31 +15,46 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/quic-go/quic-go"
+	"math/rand"
 	"os"
+	"strconv"
 	"time"
 )
 
 type MsgType uint8
 
 const (
-	MSGString MsgType = 0
-	MSGSalt   MsgType = 1
-	MSGLogin  MsgType = 2
-	MSGClass  MsgType = 3
-	MSGBank   MsgType = 4
-	MSGSong   MsgType = 5
+	MSGString     MsgType = 0
+	MSGSalt       MsgType = 1
+	MSGLogin      MsgType = 2
+	MSGClass      MsgType = 3
+	MSGBank       MsgType = 4
+	MSGSong       MsgType = 5
+	MSGHall       MsgType = 6
+	MSGRoom       MsgType = 7
+	MSGSingleRoom MsgType = 8
+
+	MSGLogout    MsgType = 9
+	MSGReConnect MsgType = 10
 )
 
 type User struct {
 	Conn    quic.Connection
 	stream  quic.Stream
-	logined bool
 	Account string
-	Name    string
+	Salt    []byte
+	Key     []byte
+}
+type UserDB struct {
+	Account string
+	Passwd  []byte
 }
 
 var (
-	users  = make([]User, 0)
+	users = map[string]User{}
+
+	UsersDB = map[string]UserDB{}
+	//make([]User, 0)
 	isOpen = true
 
 	song, _ = os.ReadFile("Sincerely.mid")
@@ -46,81 +62,8 @@ var (
 
 	hbox    = container.NewAdaptiveGrid(2)
 	classes = Classes{
-		ClassesNames: &[]string{"test", "test2"},
-		Classes: map[string]*Class{
-			"test": {
-				Name:      "test",
-				BankNames: &[]string{"test", "test2"},
-				Banks: map[string]*Bank{
-					"test": {
-						Name:          "test",
-						Creator:       "test",
-						Info:          "test",
-						OnlineAccount: "test",
-						SongNames:     &[]string{"test"},
-						Songs: map[string]Song{
-							"test": {
-								Name:    "test",
-								Info:    "test",
-								Creator: "test",
-								Data:    song,
-							},
-						},
-					},
-					"test2": {
-						Name:          "test2",
-						Creator:       "test",
-						Info:          "test",
-						OnlineAccount: "test",
-						SongNames:     &[]string{"test"},
-						Songs: map[string]Song{
-							"test": {
-								Name:    "test",
-								Info:    "test",
-								Creator: "test",
-								Data:    song,
-							},
-						},
-					},
-				},
-			},
-			"test2": {
-				Name:      "test2",
-				BankNames: &[]string{"test", "test2"},
-				Banks: map[string]*Bank{
-					"test": {
-						Name:          "test",
-						Creator:       "test",
-						Info:          "test",
-						OnlineAccount: "test",
-						SongNames:     &[]string{"test"},
-						Songs: map[string]Song{
-							"test": {
-								Name:    "test",
-								Info:    "test",
-								Creator: "test",
-								Data:    song,
-							},
-						},
-					},
-					"test2": {
-						Name:          "test2",
-						Creator:       "test",
-						Info:          "test",
-						OnlineAccount: "test",
-						SongNames:     &[]string{"test"},
-						Songs: map[string]Song{
-							"test": {
-								Name:    "test",
-								Info:    "test",
-								Creator: "test",
-								Data:    song,
-							},
-						},
-					},
-				},
-			},
-		},
+		ClassesNames: &[]string{},
+		Classes:      map[string]*Class{},
 	}
 )
 
@@ -147,9 +90,8 @@ func server() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		u := User{Conn: accept, logined: false}
+		u := User{Conn: accept}
 		go u.handleClient()
-		users = append(users, u)
 	}
 }
 func addSong(name, info, author, creator string, data []byte, class *Bank) {
@@ -376,18 +318,30 @@ func addClassPoint(box *fyne.Container, labels *Classes) {
 		box.Add(l)
 	}
 }
+func addPlayers(panel *fyne.Container) {
+	for _, u := range users {
+		panel.Add(widget.NewLabel(u.Account))
+	}
+}
 func buildUI() {
 	hbox.RemoveAll()
 	uWindow.RemoveAll()
-	vbox := container.New(layout.NewVBoxLayout())
-	hbox.Add(vbox)
+	OnlineSongBankPanel := container.New(layout.NewVBoxLayout())
+	OnlinePlayersPanel := container.NewVBox()
+	hbox.Add(OnlineSongBankPanel)
 	hbox.Add(uWindow)
-	hbox.Resize(fyne.NewSize(720, 480))
-	vbox.Resize(fyne.NewSize(360, 480))
-	addClassPoint(vbox, &classes)
+	hbox.Add(OnlinePlayersPanel)
+	addClassPoint(OnlineSongBankPanel, &classes)
+	addPlayers(OnlinePlayersPanel)
 }
 
 func main() {
+	addClass("测试分类", &classes)
+	addBank("测试曲库", "test", "test", "test", classes.Classes["测试分类"])
+	addSong("sincerely", "", "紫罗兰永恒花园", "test", song, classes.Classes["测试分类"].Banks["测试曲库"])
+	passHash := sha256.Sum256([]byte("12345"))
+	UsersDB["12345"] = UserDB{Account: "12345", Passwd: passHash[:]}
+	//new String(Hash.hash((passwd.getText().toString() + salt).getBytes())));
 	go server()
 	myApp := app.New()
 	myApp.Settings().SetTheme(serverTheme)
@@ -453,7 +407,7 @@ type Song struct {
 	Data    []byte `json:"data"`
 }
 
-func (u User) OnMessage(message []byte) {
+func (u *User) OnMessage(message []byte) {
 	bw := bytes.NewReader(message)
 	gr, err := gzip.NewReader(bw)
 	if err != nil {
@@ -481,10 +435,36 @@ func (u User) OnMessage(message []byte) {
 		}
 		break
 	case MSGSalt:
-		u.SendMessage(MSGSalt, []byte("123"))
+		salt := []byte(strconv.Itoa(rand.Int()))
+		u.Salt = salt
+		u.SendMessage(MSGSalt, salt)
 		break
 	case MSGLogin:
-		u.SendMessage(MSGLogin, []byte("欢迎回来"))
+		user := struct {
+			Name   string `json:"name"`
+			Passwd []byte `json:"passwd"`
+		}{}
+		err := json.Unmarshal(message, &user)
+		if err != nil {
+			return
+		}
+		s := sha256.Sum256(append(UsersDB[user.Name].Passwd, u.Salt...))
+		if !bytes.Equal(s[:], user.Passwd) {
+			msg := []byte("密码错误")
+			u.SendMessage(MSGLogin, append([]byte{1}, msg...))
+			return
+		}
+		u.Account = user.Name
+		users[u.Account] = *u
+		msg := struct {
+			Msg string `json:"msg"`
+			Key []byte `json:"key"`
+		}{Msg: "欢迎回来"}
+		shakey := sha256.Sum256(user.Passwd)
+		msg.Key = shakey[:]
+		a, _ := json.Marshal(msg)
+		u.SendMessage(MSGLogin, append([]byte{0}, a...))
+		buildUI()
 		break
 	case MSGClass:
 		classesJson := ClassesJSON{ClassesNames: *classes.ClassesNames, Classes: map[string]ClassBanksJSON{}}
@@ -524,11 +504,26 @@ func (u User) OnMessage(message []byte) {
 		d, _ := json.Marshal(song)
 		u.SendMessage(MSGSong, d)
 		break
+	case MSGLogout:
+		u.Key = []byte{}
+		u.Account = ""
+		u.Salt = []byte{}
+		delete(users, u.Account)
+		buildUI()
+		break
+	case MSGReConnect:
+		msg := struct {
+			Name string `json:"name"`
+			Key  []byte `json:"key"`
+		}{}
+		json.Unmarshal(message, &msg)
+		if bytes.Equal(users[msg.Name].Key, msg.Key) {
+			user := users[msg.Name]
+			u.Key = user.Key
+			u.Salt = user.Salt
+			u.Account = user.Account
+		}
 	}
-}
-
-func (u User) login() {
-	u.logined = true
 }
 func (u *User) SendMessage(t MsgType, data []byte) {
 	fmt.Println("s", t, string(data))
@@ -544,12 +539,14 @@ func (u *User) SendMessage(t MsgType, data []byte) {
 	u.stream.Write(int2byte(len(buf.Bytes())))
 	u.stream.Write(buf.Bytes())
 }
-func (u User) Close() {
-	for i, u1 := range users {
-		if u1 == u {
-			users = append(users[:i], users[i+1:]...)
-		}
+func (u *User) Close() {
+	if u.stream != nil {
+		u.stream.Close()
 	}
+	delete(users, u.Account)
+	buildUI()
+	//users = append(users[:i], users[i+1:]...)
+
 }
 func (u *User) handleClient() {
 	defer u.Close()
@@ -557,8 +554,8 @@ func (u *User) handleClient() {
 	u.stream = stream
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	defer u.stream.Close()
 	lenBuffer := make([]byte, 1)
 	for {
 		lenData := make([]byte, 0)

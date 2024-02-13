@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.Nullable;
 
+import static ly.jj.newjustpiano.items.StaticItems.LOGOUT;
+import static ly.jj.newjustpiano.tools.StaticTools.sendMessageNoResponse;
+
 public class OnlineMain extends ly.jj.newjustpiano.Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,5 +35,11 @@ public class OnlineMain extends ly.jj.newjustpiano.Activity {
             Intent intent = new Intent(this, OnlinePerson.class);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sendMessageNoResponse(LOGOUT, null);
     }
 }

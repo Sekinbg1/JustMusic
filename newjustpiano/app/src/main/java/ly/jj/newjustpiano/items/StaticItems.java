@@ -14,6 +14,12 @@ public class StaticItems {
     public static ConnectClient client;
     public static float BackgroundTimeDiv = 0.9f;
 
+    public static String Server = "192.168.5.243:1130";
+
+    public static String applicationProtocolId = "quic-JPServer";
+
+    public static byte[] onlineHashKey = new byte[0];
+
     public static int ActivityCount = 0;
 
     public static boolean isBackground() {
@@ -26,10 +32,11 @@ public class StaticItems {
     public final static byte LOGIN = 2;
     public final static byte CLASS = 3;
     public final static byte BANK = 4;
-    public final static byte SONG=5;
+    public final static byte SONG = 5;
+    public final static byte LOGOUT = 9;
 
+    public final static byte RECONNECT=10;
 
-    public static String applicationProtocolId = "quic-JPServer";
 
     public static Thread playingThread;
     public static MediaFormat audioFormat;

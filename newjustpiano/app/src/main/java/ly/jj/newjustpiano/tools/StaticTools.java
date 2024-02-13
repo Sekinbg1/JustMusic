@@ -3,6 +3,7 @@ package ly.jj.newjustpiano.tools;
 import Client.OnMessageListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -15,6 +16,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -38,6 +40,8 @@ public class StaticTools {
         ;
     }
 
+    public static Context context;
+
     private final static Handler handler = new Handler(Looper.myLooper(), msg -> {
         switch (msg.what) {
             case 0:
@@ -49,6 +53,9 @@ public class StaticTools {
                 byte[] data = (byte[]) ((Object[]) msg.obj)[1];
                 onClientMessage1.Message(data);
                 return true;
+            case 3:
+                Toast cant = Toast.makeText(context, "无法连接到服务器", Toast.LENGTH_SHORT);
+                cant.show();
         }
         return false;
     });
@@ -71,7 +78,7 @@ public class StaticTools {
                 handler.sendMessage(msg);
             }
         });
-        client.sendMessage(MSGType, data);
+        sendMessage(MSGType, data);
     }
 
     public static byte[] sendMessageFuncSync(byte MSGType, byte[] data) {
@@ -87,7 +94,7 @@ public class StaticTools {
                 msg[0] = bytes;
             }
         });
-        client.sendMessage(MSGType, data);
+        sendMessage(MSGType, data);
         try {
             while (msg[0].length == 0) {
                 sleep(10);
@@ -96,6 +103,35 @@ public class StaticTools {
             e.printStackTrace();
         }
         return msg[0];
+    }
+
+    public static void setOnlineHashKey(byte[] data) {
+        onlineHashKey = data;
+    }
+
+    public static void sendMessageNoResponse(byte MSGType, byte[] data) {
+        sendMessage(MSGType, data);
+    }
+
+    public static void sendMessage(byte MSGType, byte[] data) {
+        if (client.isConnected()) {
+            client.sendMessage(MSGType, data);
+        } else {
+            client.addOnMessageListener(RECONNECT, new OnMessageListener() {
+                @Override
+                public void onEnd() {
+                    handler.sendEmptyMessage(3);
+                }
+
+                @Override
+                public void onMessage(byte[] bytes) {
+
+                }
+            });
+            client.sendMessage(RECONNECT, null);
+            client.connect(Server, applicationProtocolId);
+            client.sendMessage(MSGType, data);
+        }
     }
 
     public static String[] testaccounts = {"test", "test1"};
