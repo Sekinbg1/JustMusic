@@ -6,8 +6,6 @@ import (
 	"image/color"
 )
 
-var serverTheme fyne.Theme = ServerTheme{}
-
 type ServerTheme struct {
 }
 

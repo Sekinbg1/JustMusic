@@ -65,6 +65,7 @@ var (
 		ClassesNames: &[]string{},
 		Classes:      map[string]*Class{},
 	}
+	serverTheme = ServerTheme{}
 )
 
 func server() {
@@ -392,7 +393,7 @@ type SongInfoJSON struct {
 }
 type Bank struct {
 	Name          string          `json:"name"`
-	Expand        *bool           `json:"-" default:"new(bool)"`
+	Expand        *bool           `json:"-"`
 	Creator       string          `json:"creator"`
 	Info          string          `json:"info"`
 	OnlineAccount string          `json:"onlineAccount"`
