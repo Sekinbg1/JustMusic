@@ -40,19 +40,24 @@ const (
 )
 
 type User struct {
-	Conn         quic.Connection
-	stream       quic.Stream
+	Conn   quic.Connection
+	stream quic.Stream
+	Salt   []byte
+	Key    []byte
+
 	Account      string
 	Level        int
 	CheckLevel   int
 	RegisterTime time.Time
 	exp          int
-	Salt         []byte
-	Key          []byte
 }
 type UserDB struct {
-	Account string
-	Passwd  []byte
+	Account      string
+	Passwd       []byte
+	Level        int
+	CheckLevel   int
+	RegisterTime time.Time
+	exp          int
 }
 
 var (

@@ -16,18 +16,26 @@ import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.alibaba.fastjson2.JSONObject;
+import ly.jj.newjustpiano.R;
+import ly.jj.newjustpiano.views.PersonView;
 
 import static java.lang.Thread.sleep;
 import static ly.jj.newjustpiano.items.StaticItems.*;
 import static ly.jj.newjustpiano.items.StaticItems.SONG;
 
 public class StaticTools {
+    public static void bindPeron(PersonView view, String name) {
+        TextView nameView = view.findViewById(R.id.person_name);
+        nameView.setText(name);
+    }
+
     public static class OnClientMessage {
         protected void Error() {
         }

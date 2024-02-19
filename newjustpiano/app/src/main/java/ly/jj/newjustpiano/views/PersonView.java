@@ -3,6 +3,8 @@ package ly.jj.newjustpiano.views;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -74,7 +76,6 @@ public class PersonView extends ViewGroup {
             int cw = child.getMeasuredWidth();
             int ch = child.getMeasuredHeight();
             if ((cl + ct + cr + cb) != 0 & (((cl + cr) == Math.max(cl, cr)) && ((ct + cb) == Math.max(ct, cb)))) {
-                System.out.println(i+Arrays.toString(new int[]{cl, ct, cr, cb}));
                 int pw = (r - l - cw) / 2;
                 int ph = (b - t - ch) / 2;
                 int rl = 0, rt = 0, rr = 0, rb = 0;

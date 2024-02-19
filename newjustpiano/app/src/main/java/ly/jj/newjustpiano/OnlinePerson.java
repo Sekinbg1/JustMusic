@@ -6,8 +6,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.alibaba.fastjson2.JSONObject;
 import ly.jj.newjustpiano.tools.StaticTools;
+import ly.jj.newjustpiano.views.PersonView;
 
 import static ly.jj.newjustpiano.items.StaticItems.PERSON_INFO;
+import static ly.jj.newjustpiano.tools.StaticTools.bindPeron;
 import static ly.jj.newjustpiano.tools.StaticTools.sendMessageFuncAsync;
 
 public class OnlinePerson extends ly.jj.newjustpiano.Activity {
@@ -20,6 +22,7 @@ public class OnlinePerson extends ly.jj.newjustpiano.Activity {
         TextView level = findViewById(R.id.online_person_level);
         TextView exp = findViewById(R.id.online_person_exp);
         TextView cl = findViewById(R.id.online_person_cl);
+        PersonView personView = findViewById(R.id.online_person_person);
         /*
 			Name    string `json:"name"`
 			RegTime string `json:"regTime"`
@@ -37,6 +40,7 @@ public class OnlinePerson extends ly.jj.newjustpiano.Activity {
                 level.setText(jsonObject.getString("level"));
                 exp.setText(jsonObject.getString("exp") + "/" + (jsonObject.getInteger("level") * 20 + 50));
                 cl.setText(jsonObject.getString("cLevel"));
+                bindPeron(personView,jsonObject.getString("name"));
             }
         });
     }

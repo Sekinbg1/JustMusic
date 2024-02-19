@@ -15,6 +15,7 @@ public class StaticItems {
     public static float BackgroundTimeDiv = 0.9f;
 
     public static String Server = "192.168.5.61:1130";
+    public static String Server2="192.168.5.242:1130";
 
     public static String applicationProtocolId = "quic-JPServer";
 

@@ -91,13 +91,13 @@ public class Init extends ly.jj.newjustpiano.Activity {
                 for (int i = soundStr.length - 1; i >= 0; i--) {
                     if (!soundStr[i].endsWith("ogg")) continue;
                     File outSound = new File(sounds, soundStr[i].substring(0, soundStr[i].indexOf('.')));
-                    soundMixer.setSound(outSound);
                     if (outSound.exists()) continue;
                     AssetFileDescriptor afd = getAssets().openFd("sounds/" + soundStr[i]);
                     decoder.set(afd);
                     decoder.decode();
-                    progress.setProgress(i * 100 / soundStr.length);
+                    progress.setProgress(100-i * 100 / soundStr.length);
                     new FileOutputStream(outSound).write(decoder.read());
+                    soundMixer.setSound(outSound);
                 }
                 if (audioFormat == null) {
                     AssetFileDescriptor afd = getAssets().openFd("sounds/" + soundStr[0]);

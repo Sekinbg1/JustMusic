@@ -25,6 +25,8 @@ public class Main extends ly.jj.newjustpiano.Activity {
     @SuppressLint("StaticFieldLeak")
     Context context = this;
     public Handler handler = new Handler(Looper.myLooper(), msg -> {
+        client.connect(Server2, applicationProtocolId);
+        sendMessage(MSG, null);
         Toast toast = Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT);
         toast.show();
         return true;
