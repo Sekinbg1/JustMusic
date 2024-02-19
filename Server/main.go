@@ -34,16 +34,21 @@ const (
 	MSGRoom       MsgType = 7
 	MSGSingleRoom MsgType = 8
 
-	MSGLogout    MsgType = 9
-	MSGReConnect MsgType = 10
+	MSGLogout     MsgType = 9
+	MSGReConnect  MsgType = 10
+	MSGPersonInfo MsgType = 11
 )
 
 type User struct {
-	Conn    quic.Connection
-	stream  quic.Stream
-	Account string
-	Salt    []byte
-	Key     []byte
+	Conn         quic.Connection
+	stream       quic.Stream
+	Account      string
+	Level        int
+	CheckLevel   int
+	RegisterTime time.Time
+	exp          int
+	Salt         []byte
+	Key          []byte
 }
 type UserDB struct {
 	Account string
@@ -51,7 +56,7 @@ type UserDB struct {
 }
 
 var (
-	users = map[string]User{}
+	users = map[string]*User{}
 
 	UsersDB = map[string]UserDB{}
 	//make([]User, 0)
@@ -324,6 +329,56 @@ func addPlayers(panel *fyne.Container) {
 		panel.Add(widget.NewLabel(u.Account))
 	}
 }
+func addControlPoint(panel *fyne.Container) {
+	state := widget.NewLabel("运行中")
+	buttonPanel := container.NewHBox()
+	open := widget.NewButton("关闭", nil)
+	if isOpen {
+		open.SetText("关闭")
+		state.SetText("运行中")
+	} else {
+		open.SetText("打开")
+		if len(users) > 0 {
+			state.SetText("已关闭，停止中")
+		} else {
+			state.SetText("已停止")
+		}
+	}
+	open.OnTapped = func() {
+		if isOpen {
+			isOpen = false
+		} else {
+			isOpen = true
+		}
+		buildUI()
+	}
+	mclose := widget.NewButton("通知关闭", nil)
+	mclose.OnTapped = func() {
+		defer buildUI()
+		for _, u := range users {
+			u.SendMessage(MSGString, append([]byte{2}, []byte("服务器将在十分钟后关闭维护")...))
+			u := u
+			go func() {
+				defer u.Close()
+				time.Sleep(time.Minute * 10)
+				u.SendMessage(MSGString, append([]byte{2}, []byte("服务器已关闭维护")...))
+			}()
+		}
+	}
+	fclose := widget.NewButton("强制关闭", nil)
+	fclose.OnTapped = func() {
+		defer buildUI()
+		for _, u := range users {
+			u.SendMessage(MSGString, append([]byte{2}, []byte("服务器已关闭维护")...))
+			u.Close()
+		}
+	}
+	panel.Add(state)
+	panel.Add(buttonPanel)
+	buttonPanel.Add(open)
+	buttonPanel.Add(mclose)
+	buttonPanel.Add(fclose)
+}
 func buildUI() {
 	hbox.RemoveAll()
 	uWindow.RemoveAll()
@@ -332,6 +387,9 @@ func buildUI() {
 	hbox.Add(OnlineSongBankPanel)
 	hbox.Add(uWindow)
 	hbox.Add(OnlinePlayersPanel)
+	OnlineControlPanel := container.NewVBox()
+	hbox.Add(OnlineControlPanel)
+	addControlPoint(OnlineControlPanel)
 	addClassPoint(OnlineSongBankPanel, &classes)
 	addPlayers(OnlinePlayersPanel)
 }
@@ -408,6 +466,13 @@ type Song struct {
 	Data    []byte `json:"data"`
 }
 
+func (u *User) login() {
+	u.Level = 1
+	u.RegisterTime = time.Now()
+	u.CheckLevel = 0
+	u.exp = 0
+}
+
 func (u *User) OnMessage(message []byte) {
 	bw := bytes.NewReader(message)
 	gr, err := gzip.NewReader(bw)
@@ -425,16 +490,21 @@ func (u *User) OnMessage(message []byte) {
 	message = buf.Bytes()
 	c := MsgType(message[0])
 	message = message[1:]
-	fmt.Println("r", c, string(message))
-	switch c {
-	case MSGString:
+	if MSGString == c {
 		if isOpen {
 			u.SendMessage(MSGString, []byte{0})
 		} else {
 			msg := []byte("服务器正在维护中")
 			u.SendMessage(MSGString, append([]byte{1}, msg...))
 		}
-		break
+		return
+	}
+	if !isOpen {
+		msg := []byte("服务器正在维护中")
+		u.SendMessage(MSGString, append([]byte{3}, msg...))
+		return
+	}
+	switch c {
 	case MSGSalt:
 		salt := []byte(strconv.Itoa(rand.Int()))
 		u.Salt = salt
@@ -456,7 +526,8 @@ func (u *User) OnMessage(message []byte) {
 			return
 		}
 		u.Account = user.Name
-		users[u.Account] = *u
+		users[u.Account] = u
+		u.login()
 		msg := struct {
 			Msg string `json:"msg"`
 			Key []byte `json:"key"`
@@ -524,6 +595,16 @@ func (u *User) OnMessage(message []byte) {
 			u.Salt = user.Salt
 			u.Account = user.Account
 		}
+	case MSGPersonInfo:
+		msg := struct {
+			Name    string `json:"name"`
+			RegTime string `json:"regTime"`
+			Level   int    `json:"level"`
+			Exp     int    `json:"exp"`
+			CLevel  int    `json:"cLevel"`
+		}{u.Account, u.RegisterTime.Format(time.DateTime), u.Level, u.exp, u.CheckLevel}
+		data, _ := json.Marshal(msg)
+		u.SendMessage(MSGPersonInfo, data)
 	}
 }
 func (u *User) SendMessage(t MsgType, data []byte) {
@@ -545,9 +626,8 @@ func (u *User) Close() {
 		u.stream.Close()
 	}
 	delete(users, u.Account)
+	fmt.Println("delete", u.Account, len(users))
 	buildUI()
-	//users = append(users[:i], users[i+1:]...)
-
 }
 func (u *User) handleClient() {
 	defer u.Close()

@@ -25,16 +25,8 @@ public class Main extends ly.jj.newjustpiano.Activity {
     @SuppressLint("StaticFieldLeak")
     Context context = this;
     public Handler handler = new Handler(Looper.myLooper(), msg -> {
-        switch (msg.what) {
-            case 0:
-                Toast toast = Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT);
-                toast.show();
-                break;
-            case 1:
-                Toast cant = Toast.makeText(context, "无法连接到服务器", Toast.LENGTH_SHORT);
-                cant.show();
-                break;
-        }
+        Toast toast = Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT);
+        toast.show();
         return true;
     });
     private boolean exit;
@@ -53,7 +45,6 @@ public class Main extends ly.jj.newjustpiano.Activity {
             client.addOnMessageListener(MSG, new OnMessageListener() {
                 @Override
                 public void onEnd() {
-
                     if (StaticItems.client != null && !StaticItems.client.isConnected()) {
                         Message msg = new Message();
                         msg.what = 0;
@@ -64,14 +55,23 @@ public class Main extends ly.jj.newjustpiano.Activity {
 
                 @Override
                 public void onMessage(byte[] data) {
-                    Intent intent = new Intent(context, Online.class);
-                    intent.putExtra("message", new String(Arrays.copyOfRange(data, 1, data.length)));
-                    intent.putExtra("isOpen", data[0] == 0);
-                    startActivity(intent);
+                    int state = data[0];
+                    String msg = new String(Arrays.copyOfRange(data, 1, data.length));
+                    if (state == 2) {
+                        Message emsg = new Message();
+                        emsg.what = 0;
+                        emsg.obj = msg;
+                        handler.sendMessage(emsg);
+                    } else {
+                        Intent intent = new Intent(context, Online.class);
+                        intent.putExtra("message", msg);
+                        intent.putExtra("isOpen", state == 0);
+                        startActivity(intent);
+                    }
                 }
             });
             client.connect(Server, applicationProtocolId);
-            sendMessage(MSG,null);
+            sendMessage(MSG, null);
         });
         findViewById(R.id.main_songs).setOnClickListener(v -> {
             Intent intent = new Intent(this, Songs.class);

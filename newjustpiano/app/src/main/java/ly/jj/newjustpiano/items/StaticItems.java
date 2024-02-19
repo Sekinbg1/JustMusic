@@ -14,7 +14,7 @@ public class StaticItems {
     public static ConnectClient client;
     public static float BackgroundTimeDiv = 0.9f;
 
-    public static String Server = "192.168.5.243:1130";
+    public static String Server = "192.168.5.61:1130";
 
     public static String applicationProtocolId = "quic-JPServer";
 
@@ -36,6 +36,8 @@ public class StaticItems {
     public final static byte LOGOUT = 9;
 
     public final static byte RECONNECT=10;
+
+    public final static byte PERSON_INFO=11;
 
 
     public static Thread playingThread;

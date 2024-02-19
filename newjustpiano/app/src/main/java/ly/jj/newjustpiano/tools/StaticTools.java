@@ -82,11 +82,11 @@ public class StaticTools {
     }
 
     public static byte[] sendMessageFuncSync(byte MSGType, byte[] data) {
-        final byte[][] msg = {new byte[0]};
+        final byte[][] msg = new byte[1][];
         client.addOnMessageListener(MSGType, new OnMessageListener() {
             @Override
             public void onEnd() {
-                msg[0] = new byte[1];
+                msg[0] = new byte[0];
             }
 
             @Override
@@ -96,7 +96,7 @@ public class StaticTools {
         });
         sendMessage(MSGType, data);
         try {
-            while (msg[0].length == 0) {
+            while (msg[0] == null) {
                 sleep(10);
             }
         } catch (InterruptedException e) {
