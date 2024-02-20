@@ -91,7 +91,10 @@ public class Init extends ly.jj.newjustpiano.Activity {
                 for (int i = soundStr.length - 1; i >= 0; i--) {
                     if (!soundStr[i].endsWith("ogg")) continue;
                     File outSound = new File(sounds, soundStr[i].substring(0, soundStr[i].indexOf('.')));
-                    if (outSound.exists()) continue;
+                    if (outSound.exists()) {
+                        soundMixer.setSound(outSound);
+                        continue;
+                    }
                     AssetFileDescriptor afd = getAssets().openFd("sounds/" + soundStr[i]);
                     decoder.set(afd);
                     decoder.decode();
